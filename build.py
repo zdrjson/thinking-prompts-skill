@@ -7,6 +7,19 @@ D = json.load(open(ROOT/'data/prompts.json', encoding='utf-8'))
 P, SRC = D['prompts'], D['source']
 ATTR = f"框架蒸馏自{SRC['author']}《{SRC['title']}》 {SRC['url']}"
 
+
+def md_wrap(body, limit=48):
+    """只给 Markdown 代码块用：在标点处软折行，避免 GitHub 上要横向拖动。
+    网页版是 white-space:pre-wrap 自己会折，源数据不动。"""
+    out = []
+    for line in body.split('\n'):
+        while len(line) > limit:
+            cut = max((line.rfind(c, 0, limit + 1) for c in '。；，、：!?！？'), default=-1)
+            if cut < limit // 2: cut = limit - 1
+            out.append(line[:cut + 1]); line = line[cut + 1:].lstrip()
+        out.append(line)
+    return '\n'.join(out)
+
 def w(p, s):
     p = ROOT/p; p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(s, encoding='utf-8'); print(' ', p.relative_to(ROOT))
@@ -30,7 +43,7 @@ for p in P:
     w(f"prompts/{p['n']:02d}-{p['id']}.md",
       f"---\nid: {p['id']}\nn: {p['n']}\ngroup: {p['groupName']}\nname: {p['name']}\n"
       f"when: {p['when']}\n---\n\n# {p['name']}\n\n**什么时候用：** {p['when']}\n\n"
-      f"```text\n{p['body']}\n```\n\n**要点：** {p['note']}\n\n---\n{ATTR}\n")
+      f"```text\n{md_wrap(p['body'])}\n```\n\n**要点：** {p['note']}\n\n---\n{ATTR}\n")
 
 # ---------- 3. AGENTS.md：跨 agent 标准 ----------
 rows = '\n'.join(f"| {p['n']} | {p['name']} | {p['when']} | `prompts/{p['n']:02d}-{p['id']}.md` |" for p in P)
@@ -103,7 +116,7 @@ for p in P:
         f"\n<a id=\"{p['n']:02d}-{p['id']}\"></a>\n"
         f"### `{p['n']:02d}` {p['name']}\n\n"
         f"> **什么时候用** — {p['when']}\n\n"
-        f"```text\n{p['body']}\n```\n\n"
+        f"```text\n{md_wrap(p['body'])}\n```\n\n"
         f"**要点** — {p['note']}\n\n"
         f"<sub>[↑ 回目录](#十二个框架)</sub>\n")
 
