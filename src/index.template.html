@@ -86,6 +86,13 @@ h3{font-family:var(--serif);font-size:clamp(22px,3vw,30px);font-weight:700;margi
 .sheet-hd .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3)}
 .slotcount{font-family:var(--mono);font-size:11px;color:var(--slot);letter-spacing:.06em}
+.hd-r{display:flex;align-items:center;gap:14px}
+.icopy{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--line);
+  border-radius:2px;background:var(--paper);color:var(--ink2);cursor:pointer;transition:all .13s}
+.icopy:hover{color:var(--accent);border-color:var(--accent)}
+.icopy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.icopy svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.6}
 .body{padding:20px 24px 24px;font-size:16px;line-height:34px;white-space:pre-wrap;word-break:break-word;
   background-image:repeating-linear-gradient(to bottom,transparent 0 33px,var(--grid) 33px 34px);
   background-position:0 20px;background-repeat:repeat}
@@ -93,7 +100,7 @@ h3{font-family:var(--serif);font-size:clamp(22px,3vw,30px);font-weight:700;margi
   box-shadow:inset 0 -1px 0 var(--slot-line);padding:0 .22em;border-radius:1px;
   outline:none;line-height:inherit;min-width:2em}
 .slot:focus{background:var(--slot-bg);box-shadow:inset 0 -2px 0 var(--slot)}
-.slot:empty::before{content:attr(data-ph);color:var(--slot);opacity:.62}
+.slot:empty::before{content:"【" attr(data-ph) "】";color:var(--slot);opacity:.6}
 .slot::selection{background:var(--slot);color:var(--surface)}
 
 /* actions */
@@ -213,8 +220,12 @@ function render(p){
      +'<span>NO.'+String(p.n).padStart(2,'0')+'</span></div>'
    +'<h3>'+esc(p.name)+'</h3><p class="when">什么时候用：'+esc(p.when)+'</p>'
    +'<div class="sheet"><div class="sheet-hd"><span class="lbl">Prompt 正文</span>'
-     +(n?'<span class="slotcount">'+n+' 处填空 · 点红字直接改</span>':'<span class="slotcount">整段复制，无需填空</span>')
-     +'</div><div class="body" id="body">'+html+'</div></div>'
+     +'<span class="hd-r">'
+     +(n?'<span class="slotcount">'+n+' 处填空 · 点红字直接改</span>':'<span class="slotcount">无需填空</span>')
+     +'<button class="icopy" id="icopy" title="复制整段 Prompt"><svg viewBox="0 0 16 16">'
+     +'<rect x="5.2" y="5.2" width="8.3" height="8.3" rx="1.4"/>'
+     +'<path d="M10.8 5.2V3.9c0-.8-.6-1.4-1.4-1.4H3.9c-.8 0-1.4.6-1.4 1.4v5.5c0 .8.6 1.4 1.4 1.4h1.3"/>'
+     +'</svg>复制</button></span></div><div class="body" id="body">'+html+'</div></div>'
    +'<div class="bar"><button class="btn pri" id="copy">复制 Prompt</button>'
      +'<a class="btn" id="gpt" target="_blank" rel="noopener">在 ChatGPT 打开</a>'
      +'<a class="btn" id="cl" target="_blank" rel="noopener">在 Claude 打开</a>'
@@ -232,7 +243,8 @@ function render(p){
       document.execCommand('insertText',false,(ev.clipboardData||window.clipboardData).getData('text'));
     });
   });
-  document.getElementById('copy').addEventListener('click',copy);
+  document.getElementById('copy').addEventListener('click',()=>copy());
+  document.getElementById('icopy').addEventListener('click',()=>copy());
   links();
   [...nav.querySelectorAll('.item')].forEach(b=>
     b.setAttribute('aria-current', b.dataset.id===p.id ? 'true':'false'));
@@ -275,9 +287,21 @@ async function write(t){
   let ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
   ta.remove(); return ok;
 }
-async function copy(quiet){
-  const ok=await write(text());
-  say(ok ? '已复制，贴进任意 AI 就能用' : '复制失败，请手动选中正文复制');
+async function copy(){
+  if(await write(text())) return say('已复制，贴进任意 AI 就能用');
+  // 剪贴板被环境挡住（沙箱 iframe、旧浏览器）时，退回到「替你选中，按 ⌘C」。
+  // 空填空位先把【占位符】写成真实文本，否则选区里会少掉这几段，复制出去是残缺的。
+  const blanks=[...document.querySelectorAll('.slot')].filter(s=>!s.textContent.trim());
+  blanks.forEach(s=>{s.textContent='【'+s.dataset.ph+'】'});
+  const sel=getSelection(), rg=document.createRange();
+  rg.selectNodeContents(document.getElementById('body'));
+  sel.removeAllRanges(); sel.addRange(rg);
+  const restore=()=>{blanks.forEach(s=>{
+      if(s.textContent==='【'+s.dataset.ph+'】') s.textContent='';});
+    removeEventListener('pointerdown',restore); removeEventListener('keydown',restore);};
+  addEventListener('copy',()=>setTimeout(restore,0),{once:true});
+  addEventListener('pointerdown',restore); addEventListener('keydown',restore);
+  say(/Mac|iP(hone|ad)/.test(navigator.platform)?'已为你选中，按 ⌘C 复制':'已为你选中，按 Ctrl+C 复制');
 }
 let tid;
 function say(m){

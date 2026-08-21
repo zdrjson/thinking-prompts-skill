@@ -77,40 +77,73 @@ print('  skill references 同步检查：', '全部一致' if not missing else f
 
 # ---------- 6. README ----------
 PAGES = "https://zdrjson.github.io/thinking-prompts-skill/"
-toc = []
-for g in sorted({p['group'] for p in P}):
-    gs = [p for p in P if p['group']==g]
-    toc.append(f"**{g}、{gs[0]['groupName']}**\n" + "\n".join(
-        f"{p['n']}. [{p['name']}](#{p['n']}-{p['id']}) —— {p['when']}" for p in gs))
+GNAMES = {g: next(p['groupName'] for p in P if p['group']==g) for g in sorted({p['group'] for p in P})}
+BADGE = ("[![网页版](https://img.shields.io/badge/网页版-直接用-2E6B4C?style=flat-square)](%s)"
+         "&nbsp;[![MCP](https://img.shields.io/badge/MCP-server-B5372B?style=flat-square)](#接-mcp)"
+         "&nbsp;[![AGENTS.md](https://img.shields.io/badge/AGENTS.md-跨_agent-555?style=flat-square)](AGENTS.md)"
+         "&nbsp;[![License](https://img.shields.io/badge/license-MIT-999?style=flat-square)](LICENSE)") % PAGES
+
+toc_rows = "\n".join(
+    f"| `{p['n']:02d}` | **[{p['name']}](#{p['n']:02d}-{p['id']})** | {p['when']} |"
+    + ("" if p['n'] not in (1,2,6,9,11) else "")
+    for p in P)
+
 secs = []
 last = None
 for p in P:
     if p['group'] != last:
-        secs.append(f"\n---\n\n# {p['group']}、{p['groupName']}\n")
         last = p['group']
-    secs.append(f"## {p['n']}. {p['name']}\n\n**什么时候用：** {p['when']}\n\n"
-                f"```text\n{p['body']}\n```\n\n**要点：** {p['note']}\n")
+        secs.append(f"\n<br>\n\n## {p['group']} / {GNAMES[p['group']]}\n")
+    secs.append(
+        f"\n<a id=\"{p['n']:02d}-{p['id']}\"></a>\n"
+        f"### `{p['n']:02d}` {p['name']}\n\n"
+        f"> **什么时候用** — {p['when']}\n\n"
+        f"```text\n{p['body']}\n```\n\n"
+        f"**要点** — {p['note']}\n\n"
+        f"<sub>[↑ 回目录](#十二个框架)</sub>\n")
 
-w('README.md', f"""# 12 个思考 Prompt
+w('README.md', f"""<div align="center">
 
-覆盖 **问清问题 / 学习 / 解决问题 / 决策 / 认识自己**。不绑定任何一家 AI —— 网页直接用，或者接进你自己的 agent。
+# 12 个思考 Prompt
 
-**[→ 打开网页版]({PAGES})**　填空直接在 Prompt 正文里填，复制出去的是填好的版本。
+**问清问题　·　学习　·　解决问题　·　决策　·　认识自己**
+
+不绑定任何一家 AI。打开网页就能用，也能接进你自己的 agent。
+
+{BADGE}
+
+</div>
+
+<br>
+
+<div align="center">
+
+### [→ 打开网页版]({PAGES})
+
+<sub>填空直接在 Prompt 正文里填，复制出去的是填好的版本</sub>
+
+</div>
+
+<br>
+
+---
 
 ## 五种接法，同一份源
 
 | 方式 | 给谁 | 怎么接 |
-|---|---|---|
-| **网页版** | 任何人，零安装 | [{PAGES}]({PAGES}) |
-| **MCP server** | 任何 MCP 客户端<br>Claude Code / Claude Desktop / Cursor / Cline / Windsurf / Zed / Continue… | 见下方 |
-| **AGENTS.md** | 读 AGENTS.md 的 agent<br>Codex / Cursor / Zed / Amp… | 把 `AGENTS.md` 放进项目根目录 |
-| **Cursor rules** | Cursor | 复制 `.cursor/rules/thinking-prompts.mdc` |
-| **Claude Skill** | Claude Code / Claude Desktop | `git clone … ~/.claude/skills/thinking-prompts` |
-| **裸 Markdown** | 自己拼工作流 | `prompts/*.md`、`data/prompts.json` |
+| :--- | :--- | :--- |
+| **网页版** | 任何人，零安装 | [打开]({PAGES}) |
+| **MCP server** | 任何 MCP 客户端<br><sub>Claude Code · Claude Desktop · Cursor · Cline · Windsurf · Zed · Continue…</sub> | [见下方](#接-mcp) |
+| **AGENTS.md** | 读 AGENTS.md 的 agent<br><sub>Codex · Cursor · Zed · Amp…</sub> | 把 [`AGENTS.md`](AGENTS.md) 放进项目根目录 |
+| **Cursor rules** | Cursor | 复制 [`.cursor/rules/`](.cursor/rules/) |
+| **Claude Skill** | Claude Code · Claude Desktop | `git clone` 进 `~/.claude/skills/` |
+| **裸 Markdown** | 自己拼工作流 | [`prompts/`](prompts/) · [`data/prompts.json`](data/prompts.json) |
+
+<br>
 
 ### 接 MCP
 
-零依赖，只要有 Node。克隆后在客户端配置里加一段：
+零依赖，只要有 Node。克隆下来，在客户端配置里加一段：
 
 ```json
 {{
@@ -123,35 +156,53 @@ w('README.md', f"""# 12 个思考 Prompt
 }}
 ```
 
-接上以后有两个面向：12 个框架会出现在客户端的斜杠/提示菜单里（`【】` 变成可填参数），
-同时 agent 自己也能调 `list_thinking_frameworks` / `get_thinking_framework` 判断该套哪个框架。
+接上以后有两个面向：
+
+- **给人** — 12 个框架出现在客户端的斜杠菜单里，`【】` 变成可填参数
+- **给 agent** — 模型自己调 `list_thinking_frameworks` / `get_thinking_framework`，判断该套哪个框架
+
+<br>
 
 ---
 
-## 目录
+<a id="十二个框架"></a>
 
-{chr(10).join(chr(10)+t for t in toc)}
+## 十二个框架
 
-> **先分流：** {D['routing']}
+| # | 框架 | 什么时候用 |
+| :--- | :--- | :--- |
+{toc_rows}
+
+> [!TIP]
+> **先分流** — {D['routing']}
 
 用的时候把 `【】` 里的内容换成你自己的信息。手头有原始材料就一起贴上去 —— 这些框架吃上下文，说得越具体，结果差得越远。
 {''.join(secs)}
+<br>
+
 ---
 
-# 改 Prompt
+## 改 Prompt
 
-`data/prompts.json` 是唯一的源，其余全部由它生成：
+[`data/prompts.json`](data/prompts.json) 是唯一的源，其余全部由它生成：
 
 ```bash
 python3 build.py
 ```
 
-会重新吐出 `index.html`、`prompts/*.md`、`AGENTS.md`、`.cursor/rules/`、`README.md`，MCP server 直接读 JSON。
+重新吐出 `index.html` · `prompts/*.md` · `AGENTS.md` · `.cursor/rules/` · `README.md`，MCP server 直接读 JSON。
 别手改生成物，下次 build 会覆盖。
+
+<br>
 
 ---
 
-{ATTR}
+<div align="center">
+<sub>
 
-Prompt 原文版权归原作者{SRC['author']}所有，本仓库仅作整理、跨平台封装与可复制排版。
+框架蒸馏自{SRC['author']}《[{SRC['title']}]({SRC['url']})》<br>
+Prompt 原文版权归原作者所有，本仓库仅作整理、跨平台封装与可复制排版
+
+</sub>
+</div>
 """)
