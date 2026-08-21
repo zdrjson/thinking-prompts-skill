@@ -6,7 +6,9 @@
 
 不绑定任何一家 AI。打开网页就能用，也能接进你自己的 agent。
 
-[![网页版](https://img.shields.io/badge/网页版-直接用-2E6B4C?style=flat-square)](https://zdrjson.github.io/thinking-prompts-skill/)&nbsp;[![MCP](https://img.shields.io/badge/MCP-server-B5372B?style=flat-square)](#接-mcp)&nbsp;[![AGENTS.md](https://img.shields.io/badge/AGENTS.md-跨_agent-555?style=flat-square)](AGENTS.md)&nbsp;[![License](https://img.shields.io/badge/license-MIT-999?style=flat-square)](LICENSE)
+[![Web](https://img.shields.io/badge/web-open-2E6B4C?style=flat-square)](https://zdrjson.github.io/thinking-prompts-skill/)&nbsp;[![MCP](https://img.shields.io/badge/MCP-server-B5372B?style=flat-square)](#接-mcp)&nbsp;[![AGENTS.md](https://img.shields.io/badge/AGENTS.md-any_agent-555?style=flat-square)](AGENTS.md)&nbsp;[![License](https://img.shields.io/badge/license-MIT-999?style=flat-square)](LICENSE)
+
+**[English](README.en.md)**
 
 </div>
 
@@ -26,11 +28,11 @@
 
 ## 五种接法，同一份源
 
-| 方式 | 给谁 | 怎么接 |
+| | 给谁 | 怎么接 |
 | :--- | :--- | :--- |
 | **网页版** | 任何人，零安装 | [打开](https://zdrjson.github.io/thinking-prompts-skill/) |
-| **MCP server** | 任何 MCP 客户端<br><sub>Claude Code · Claude Desktop · Cursor · Cline · Windsurf · Zed · Continue…</sub> | [见下方](#接-mcp) |
-| **AGENTS.md** | 读 AGENTS.md 的 agent<br><sub>Codex · Cursor · Zed · Amp…</sub> | 把 [`AGENTS.md`](AGENTS.md) 放进项目根目录 |
+| **MCP server** | 任何 MCP 客户端 | [见下方](#接-mcp) |
+| **AGENTS.md** | 读 AGENTS.md 的 agent | 把 [`AGENTS.md`](AGENTS.md) 放进项目根目录 |
 | **Cursor rules** | Cursor | 复制 [`.cursor/rules/`](.cursor/rules/) |
 | **Claude Skill** | Claude Code · Claude Desktop | `git clone` 进 `~/.claude/skills/` |
 | **裸 Markdown** | 自己拼工作流 | [`prompts/`](prompts/) · [`data/prompts.json`](data/prompts.json) |
@@ -46,16 +48,15 @@
   "mcpServers": {
     "thinking-prompts": {
       "command": "node",
-      "args": ["/绝对路径/thinking-prompts-skill/mcp/server.mjs"]
+      "args": ["/absolute/path/to/thinking-prompts-skill/mcp/server.mjs"]
     }
   }
 }
 ```
 
-接上以后有两个面向：
-
 - **给人** — 12 个框架出现在客户端的斜杠菜单里，`【】` 变成可填参数
 - **给 agent** — 模型自己调 `list_thinking_frameworks` / `get_thinking_framework`，判断该套哪个框架
+- 两种语言都在：工具和提示都接受 `lang` 参数（`zh` / `en`）
 
 <br>
 
@@ -65,7 +66,7 @@
 
 ## 十二个框架
 
-| # | 框架 | 什么时候用 |
+| # | | 什么时候用 |
 | :--- | :--- | :--- |
 | `01` | **[苏格拉底式提问](#01-socratic)** | 你知道自己卡住了，但说不清到底卡在哪 |
 | `02` | **[双层解释法](#02-two-layer)** | 这个概念我完全听不懂 |
@@ -119,7 +120,7 @@
 
 **要点** — 它解决的是「我究竟想问的本质问题是什么」。中途 AI 要是忍不住给建议，你就会顺着建议回答，问诊就废了——拉回来让它继续问。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <br>
 
@@ -145,7 +146,7 @@
 
 **要点** — 「把我当小学生解释」容易停在「好像懂了」——类比记住了，机制还是一团雾。两层一起给才补得上。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="03-reverse-engineer"></a>
 ### `03` 反向拆解
@@ -173,7 +174,7 @@
 
 **要点** — 第 5 条最容易被跳过。必须让它明说哪些细节只适合原案例，不然你会把不可迁移的东西照搬走。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="04-vertical-horizontal"></a>
 ### `04` 横纵分析法
@@ -212,7 +213,7 @@
 
 **要点** — 配合「深度研究 / Deep Research」模式用才是满血版。字数按需要改——只想半小时建个框架，把结尾改成 3000～5000 字，别让它为凑字数堆资料。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="05-fact-check"></a>
 ### `05` 事实核查
@@ -250,7 +251,7 @@
 
 **要点** — 一定要开联网。不开的话它会凭记忆判「已证实」，那就是拿幻觉核查幻觉。不只能查事实，也能审别人的观点和方案。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <br>
 
@@ -290,7 +291,7 @@
 
 **要点** — 最关键的一步是让它们互相质疑，真正的信息往往都在分歧里。如果三个视角一上来就一致，说明视角选得太近，重选。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="07-first-principles"></a>
 ### `07` 第一性原理
@@ -317,7 +318,7 @@
 
 **要点** — 最适合处理路径依赖。改组织流程、做产品架构、修复杂系统、写代码时都好用。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="08-cross-domain"></a>
 ### `08` 跨领域借解
@@ -347,7 +348,7 @@
 
 **要点** — 「彼此距离较远」是硬要求。三个案例都从相邻行业找，等于没跨领域。你的问题在别的行业可能已经被解决十几年了。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <br>
 
@@ -372,7 +373,7 @@
 
 **要点** — 「钢人」意味着两边都要论证到最强版本，不能一边写三行、一边写三段。最后必须给明确判断，以「两边都有道理，看你自己」收尾等于没做决策。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="10-min-experiment"></a>
 ### `10` 用最小实验替代空想
@@ -399,7 +400,7 @@
 
 **要点** — 停止条件（第 5 条）必须写在实验开始前，否则事后一定会被你合理化掉。最后那个「明天就能开始的动作」要具体到能立刻执行，不能是「做个调研」。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <br>
 
@@ -461,7 +462,7 @@
 
 **要点** — 长对话，半小时起步，一次只问你一个问题。中途别切别的话题。回答得越具体，最后的说明书越准。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <a id="12-life-design"></a>
 ### `12` 人生设计术
@@ -547,7 +548,7 @@
 
 **要点** — 基于斯坦福人生设计课。挖天赋往过去看，这个往未来看。同样是长对话，一定要坚持跑完。
 
-<sub>[↑ 回目录](#十二个框架)</sub>
+<sub>[↑](#十二个框架)</sub>
 
 <br>
 
@@ -561,7 +562,7 @@
 python3 build.py
 ```
 
-重新吐出 `index.html` · `prompts/*.md` · `AGENTS.md` · `.cursor/rules/` · `README.md`，MCP server 直接读 JSON。
+重新吐出 `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · 两份 README，MCP server 直接读 JSON。
 别手改生成物，下次 build 会覆盖。
 
 <br>
@@ -572,6 +573,6 @@ python3 build.py
 
 <sub>框架蒸馏自卡兹克《[都Agent时代了，我还是想分享给你这12个我最常用的Prompt。](https://mp.weixin.qq.com/s/NAdhdFrUq9-BKelqzqpwBQ)》</sub>
 
-<sub>Prompt 原文版权归原作者所有，本仓库仅作整理、跨平台封装与可复制排版</sub>
+<sub>Prompt 原文版权归原作者卡兹克所有，本仓库仅作整理、跨平台封装与可复制排版</sub>
 
 </div>

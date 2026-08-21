@@ -34,10 +34,17 @@ a{color:var(--accent)}
 
 /* header */
 header{border-bottom:1px solid var(--line);background:var(--paper)}
-.head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;padding:44px 0 26px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 28px;padding:44px 0 26px}
 h1{font-family:var(--serif);font-weight:700;font-size:clamp(28px,4.2vw,40px);line-height:1.2;
   margin:0;letter-spacing:.01em;text-wrap:balance}
 h1 .num{color:var(--accent)}
+.langsw{display:flex;gap:0;border:1px solid var(--line);border-radius:2px;overflow:hidden;
+  margin-left:auto;align-self:center}
+.langsw button{font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:6px 13px;
+  border:0;background:var(--surface);color:var(--ink3);cursor:pointer;transition:all .13s}
+.langsw button[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+.langsw button:not([aria-pressed="true"]):hover{color:var(--ink)}
+.langsw button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--ink3);padding-bottom:6px}
 .lede{max-width:62ch;margin:14px 0 0;color:var(--ink2);font-size:15px}
@@ -142,56 +149,104 @@ footer p{margin:0 0 6px;max-width:70ch}
 
 <header><div class="wrap">
   <div class="head">
-    <h1><span class="num">12</span> 个思考 Prompt</h1>
-    <span class="tag">问清问题 · 学习 · 解决问题 · 决策 · 认识自己</span>
+    <h1 id="h1"></h1>
+    <span class="tag" id="tag"></span>
+    <div class="langsw" role="group" aria-label="Language">
+      <button id="lz" aria-pressed="true">中文</button><button id="le" aria-pressed="false">EN</button>
+    </div>
   </div>
-  <p class="lede">不用装任何东西，任何 AI 都能用。选一个场景，直接在正文里把 <code>【】</code> 填掉，然后复制走。手头有材料就一起贴上去——这些框架吃上下文，说得越具体，结果差得越远。</p>
-  <div class="route"><span class="k">先分流</span><p id="route"></p></div>
+  <p class="lede" id="lede"></p>
+  <div class="route"><span class="k" id="routek"></span><p id="route"></p></div>
 </div></header>
 
 <div class="wrap"><main>
-  <nav id="nav" aria-label="框架索引"></nav>
+  <nav id="nav"></nav>
   <article id="work"></article>
 </main></div>
 
 <footer><div class="wrap">
   <p id="src"></p>
-  <p>网页版把 <code>【】</code> 做成了可直接编辑的填空位，复制出去的是你填完的版本。同一套框架另有 MCP server、AGENTS.md、Cursor rules 和 Claude Skill 四种接入方式，见 <a id="repo" href="#">仓库</a>。</p>
+  <p id="foot2"></p>
 </div></footer>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const DATA = __PROMPT_DATA__;
+
+const T = {
+ zh:{title:'<span class="num">12</span> 个思考 Prompt',
+     tag:'问清问题 · 学习 · 解决问题 · 决策 · 认识自己',
+     lede:'不用装任何东西，任何 AI 都能用。选一个场景，直接在正文里把 <code>【】</code> 填掉，然后复制走。手头有材料就一起贴上去——这些框架吃上下文，说得越具体，结果差得越远。',
+     routek:'先分流', navLabel:'框架索引', when:'什么时候用：', sheet:'PROMPT 正文',
+     slots:n=>n+' 处填空 · 点红字直接改', noslot:'无需填空', copy:'复制', copyBig:'复制 Prompt',
+     note:'要点', openIn:x=>'在 '+x+' 打开', copyOpen:x=>'复制并打开 '+x,
+     tooLong:'这条太长，走剪贴板', copied:'已复制，贴进任意 AI 就能用',
+     selected:m=>'已为你选中，按 '+m+' 复制',
+     src:(a,u,t)=>'框架蒸馏自 '+a+'《<a href="'+u+'" target="_blank" rel="noopener">'+t+'</a>》，Prompt 原文版权归原作者所有。',
+     foot2:'网页版把 <code>【】</code> 做成了可直接编辑的填空位，复制出去的是你填完的版本。同一套框架另有 MCP server、AGENTS.md、Cursor rules 和 Claude Skill 四种接入方式，见 <a href="'+DATA.repo+'" target="_blank" rel="noopener">仓库</a>。'},
+ en:{title:'<span class="num">12</span> Thinking Prompts',
+     tag:'ASK · LEARN · SOLVE · DECIDE · KNOW YOURSELF',
+     lede:'Nothing to install — works with any AI. Pick a situation, fill the <code>【】</code> blanks right in the text, then copy it out. Paste in whatever material you have: these frameworks run on context, and the more specific you are the further the results diverge.',
+     routek:'START HERE', navLabel:'Framework index', when:'When to use: ', sheet:'PROMPT',
+     slots:n=>n+(n>1?' blanks':' blank')+' · click the red text', noslot:'no blanks to fill',
+     copy:'COPY', copyBig:'Copy prompt', note:'NOTE',
+     openIn:x=>'Open in '+x, copyOpen:x=>'Copy & open '+x,
+     tooLong:'too long for a URL — via clipboard', copied:'Copied — paste it into any AI',
+     selected:m=>'Selected for you — press '+m+' to copy',
+     src:(a,u,t)=>'Frameworks distilled from '+a+', <a href="'+u+'" target="_blank" rel="noopener">'+t+'</a>. Prompt text remains the original author\'s.',
+     foot2:'This page turns every <code>【】</code> into an editable blank, so what you copy is the version you filled in. The same frameworks also ship as an MCP server, AGENTS.md, Cursor rules and a Claude Skill — see the <a href="'+DATA.repo+'" target="_blank" rel="noopener">repo</a>.'}
+};
+
+let L = (location.search.match(/lang=(en|zh)/)||[])[1]
+     || localStorage.getItem('tp-lang')
+     || (navigator.language||'').toLowerCase().startsWith('zh') ? 'zh' : 'en';
+if((location.search.match(/lang=(en|zh)/)||[])[1]) L=(location.search.match(/lang=(en|zh)/))[1];
+else if(localStorage.getItem('tp-lang')) L=localStorage.getItem('tp-lang');
+else L=(navigator.language||'en').toLowerCase().startsWith('zh')?'zh':'en';
+
+const F=(p,k)=> L==='en' ? (p[k+'_en']||p[k]) : p[k];
 const nav=document.getElementById('nav'), work=document.getElementById('work'),
       toast=document.getElementById('toast');
-document.getElementById('route').innerHTML=DATA.routing
-  .replace(/「([^」]+)」/g,'<b>「$1」</b>');
-document.getElementById('src').innerHTML='框架蒸馏自 '+DATA.source.author+'《<a href="'+DATA.source.url
-  +'" target="_blank" rel="noopener">'+DATA.source.title+'</a>》，Prompt 原文版权归原作者所有。';
-document.getElementById('repo').href=DATA.repo;
+const fills={}; let cur=DATA.prompts[0];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-const fills={};                       // id -> [已填内容]
-let cur=DATA.prompts[0];
+function chrome(){
+  const t=T[L];
+  document.documentElement.lang = L==='en'?'en':'zh-CN';
+  document.getElementById('h1').innerHTML=t.title;
+  document.getElementById('tag').textContent=t.tag;
+  document.getElementById('lede').innerHTML=t.lede;
+  document.getElementById('routek').textContent=t.routek;
+  document.getElementById('route').innerHTML=(L==='en'?DATA.routing_en:DATA.routing)
+    .replace(/「([^」]+)」/g,'<b>「$1」</b>').replace(/"([^"]+)"/g,'<b>"$1"</b>');
+  nav.setAttribute('aria-label',t.navLabel);
+  const s=DATA.source;
+  document.getElementById('src').innerHTML=t.src(
+    L==='en'?s.author_en:s.author, s.url, L==='en'?s.title_en:s.title);
+  document.getElementById('foot2').innerHTML=t.foot2;
+  document.title = L==='en' ? DATA.title_en : DATA.title;
+  document.getElementById('lz').setAttribute('aria-pressed', L==='zh');
+  document.getElementById('le').setAttribute('aria-pressed', L==='en');
+}
 
-/* index rail, grouped */
-const groups=[];
-DATA.prompts.forEach(p=>{
-  let g=groups.find(x=>x.n===p.group);
-  if(!g) groups.push(g={n:p.group,name:p.groupName,items:[]});
-  g.items.push(p);
-});
-nav.innerHTML=groups.map(g=>'<section class="grp"><h2>'+g.n+' / '+g.name+'</h2>'
-  +g.items.map(p=>'<button class="item" data-id="'+p.id+'"><span class="no">'
-    +String(p.n).padStart(2,'0')+'</span><span><span class="nm">'+p.name
-    +'</span><span class="wh">'+p.when+'</span></span></button>').join('')
-  +'</section>').join('');
-nav.addEventListener('click',e=>{
-  const b=e.target.closest('.item'); if(!b) return;
-  location.hash=b.dataset.id;
-});
+function rail(){
+  const groups=[];
+  DATA.prompts.forEach(p=>{
+    let g=groups.find(x=>x.n===p.group);
+    if(!g) groups.push(g={n:p.group,name:F(p,'groupName'),items:[]});
+    g.items.push(p);
+  });
+  nav.innerHTML=groups.map(g=>'<section class="grp"><h2>'+g.n+' / '+esc(g.name)+'</h2>'
+    +g.items.map(p=>'<button class="item" data-id="'+p.id+'"><span class="no">'
+      +String(p.n).padStart(2,'0')+'</span><span><span class="nm">'+esc(F(p,'name'))
+      +'</span><span class="wh">'+esc(F(p,'when'))+'</span></span></button>').join('')
+    +'</section>').join('');
+  [...nav.querySelectorAll('.item')].forEach(b=>
+    b.setAttribute('aria-current', b.dataset.id===cur.id ? 'true':'false'));
+}
+nav.addEventListener('click',e=>{const b=e.target.closest('.item'); if(b) location.hash=b.dataset.id;});
 
-/* split body on 【…】 */
 function parts(body){
   const out=[]; const re=/【([^】]*)】/g; let last=0,m;
   while((m=re.exec(body))){
@@ -201,47 +256,40 @@ function parts(body){
   if(last<body.length) out.push({t:'txt',v:body.slice(last)});
   return out;
 }
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function render(p){
-  cur=p;
-  const ps=parts(p.body), n=ps.filter(x=>x.t==='slot').length;
-  const saved=fills[p.id]||[];
+  cur=p; const t=T[L];
+  const ps=parts(F(p,'body')), n=ps.filter(x=>x.t==='slot').length;
+  const key=p.id+'|'+L, saved=fills[key]||[];
   let si=-1;
   const html=ps.map(x=>{
     if(x.t==='txt') return esc(x.v);
     si++;
     return '<span class="slot" contenteditable="plaintext-only" data-ph="'+esc(x.v)
-      +'" data-i="'+si+'" role="textbox" aria-label="填空：'+esc(x.v)+'">'+esc(saved[si]||'')+'</span>';
+      +'" data-i="'+si+'" role="textbox" aria-label="'+esc(x.v)+'">'+esc(saved[si]||'')+'</span>';
   }).join('');
 
   work.innerHTML=
-   '<div class="eyebrow"><span>'+p.group+' / '+p.groupName+'</span><span class="dot"></span>'
+   '<div class="eyebrow"><span>'+p.group+' / '+esc(F(p,'groupName'))+'</span><span class="dot"></span>'
      +'<span>NO.'+String(p.n).padStart(2,'0')+'</span></div>'
-   +'<h3>'+esc(p.name)+'</h3><p class="when">什么时候用：'+esc(p.when)+'</p>'
-   +'<div class="sheet"><div class="sheet-hd"><span class="lbl">Prompt 正文</span>'
-     +'<span class="hd-r">'
-     +(n?'<span class="slotcount">'+n+' 处填空 · 点红字直接改</span>':'<span class="slotcount">无需填空</span>')
-     +'<button class="icopy" id="icopy" title="复制整段 Prompt"><svg viewBox="0 0 16 16">'
+   +'<h3>'+esc(F(p,'name'))+'</h3><p class="when">'+t.when+esc(F(p,'when'))+'</p>'
+   +'<div class="sheet"><div class="sheet-hd"><span class="lbl">'+t.sheet+'</span>'
+     +'<span class="hd-r"><span class="slotcount">'+(n?t.slots(n):t.noslot)+'</span>'
+     +'<button class="icopy" id="icopy"><svg viewBox="0 0 16 16">'
      +'<rect x="5.2" y="5.2" width="8.3" height="8.3" rx="1.4"/>'
      +'<path d="M10.8 5.2V3.9c0-.8-.6-1.4-1.4-1.4H3.9c-.8 0-1.4.6-1.4 1.4v5.5c0 .8.6 1.4 1.4 1.4h1.3"/>'
-     +'</svg>复制</button></span></div><div class="body" id="body">'+html+'</div></div>'
-   +'<div class="bar"><button class="btn pri" id="copy">复制 Prompt</button>'
-     +'<a class="btn" id="gpt" target="_blank" rel="noopener">在 ChatGPT 打开</a>'
-     +'<a class="btn" id="cl" target="_blank" rel="noopener">在 Claude 打开</a>'
+     +'</svg>'+t.copy+'</button></span></div>'
+   +'<div class="body" id="body">'+html+'</div></div>'
+   +'<div class="bar"><button class="btn pri" id="copy">'+t.copyBig+'</button>'
+     +'<a class="btn" id="gpt" target="_blank" rel="noopener"></a>'
+     +'<a class="btn" id="cl" target="_blank" rel="noopener"></a>'
      +'<span class="hint" id="hint"></span></div>'
-   +'<div class="note"><span class="k">要点</span><p>'+esc(p.note)+'</p></div>';
+   +'<div class="note"><span class="k">'+t.note+'</span><p>'+esc(F(p,'note'))+'</p></div>';
 
   document.querySelectorAll('.slot').forEach(s=>{
-    s.addEventListener('input',()=>{
-      const a=fills[p.id]||(fills[p.id]=[]);
-      a[+s.dataset.i]=s.textContent;
-      links();
-    });
-    s.addEventListener('paste',ev=>{
-      ev.preventDefault();
-      document.execCommand('insertText',false,(ev.clipboardData||window.clipboardData).getData('text'));
-    });
+    s.addEventListener('input',()=>{(fills[key]||(fills[key]=[]))[+s.dataset.i]=s.textContent; links();});
+    s.addEventListener('paste',ev=>{ev.preventDefault();
+      document.execCommand('insertText',false,(ev.clipboardData||window.clipboardData).getData('text'));});
   });
   document.getElementById('copy').addEventListener('click',()=>copy());
   document.getElementById('icopy').addEventListener('click',()=>copy());
@@ -250,7 +298,6 @@ function render(p){
     b.setAttribute('aria-current', b.dataset.id===p.id ? 'true':'false'));
 }
 
-/* rebuild plain text: empty slot falls back to its 【placeholder】 */
 function text(){
   let out='';
   document.getElementById('body').childNodes.forEach(nd=>{
@@ -261,20 +308,19 @@ function text(){
   return out;
 }
 
-const LIMIT=7800;   // 超过就先复制再开空白对话，避免 URL 被截断
+const LIMIT=7800;
 function links(){
-  const t=text(), enc=encodeURIComponent(t), fits=enc.length<=LIMIT;
+  const t=T[L], enc=encodeURIComponent(text()), fits=enc.length<=LIMIT;
   const gpt=document.getElementById('gpt'), cl=document.getElementById('cl'),
         hint=document.getElementById('hint');
   if(fits){
-    gpt.href='https://chatgpt.com/?q='+enc;  gpt.textContent='在 ChatGPT 打开';
-    cl.href='https://claude.ai/new?q='+enc;  cl.textContent='在 Claude 打开';
+    gpt.href='https://chatgpt.com/?q='+enc; gpt.textContent=t.openIn('ChatGPT');
+    cl.href='https://claude.ai/new?q='+enc; cl.textContent=t.openIn('Claude');
     gpt.onclick=cl.onclick=null; hint.textContent='';
   }else{
-    gpt.href='https://chatgpt.com/';  gpt.textContent='复制并打开 ChatGPT';
-    cl.href='https://claude.ai/new';  cl.textContent='复制并打开 Claude';
-    gpt.onclick=cl.onclick=()=>{copy(true)};
-    hint.textContent='这条太长，走剪贴板';
+    gpt.href='https://chatgpt.com/'; gpt.textContent=t.copyOpen('ChatGPT');
+    cl.href='https://claude.ai/new'; cl.textContent=t.copyOpen('Claude');
+    gpt.onclick=cl.onclick=()=>copy(); hint.textContent=t.tooLong;
   }
 }
 
@@ -288,34 +334,35 @@ async function write(t){
   ta.remove(); return ok;
 }
 async function copy(){
-  if(await write(text())) return say('已复制，贴进任意 AI 就能用');
-  // 剪贴板被环境挡住（沙箱 iframe、旧浏览器）时，退回到「替你选中，按 ⌘C」。
-  // 空填空位先把【占位符】写成真实文本，否则选区里会少掉这几段，复制出去是残缺的。
+  if(await write(text())) return say(T[L].copied);
   const blanks=[...document.querySelectorAll('.slot')].filter(s=>!s.textContent.trim());
   blanks.forEach(s=>{s.textContent='【'+s.dataset.ph+'】'});
   const sel=getSelection(), rg=document.createRange();
   rg.selectNodeContents(document.getElementById('body'));
   sel.removeAllRanges(); sel.addRange(rg);
-  const restore=()=>{blanks.forEach(s=>{
-      if(s.textContent==='【'+s.dataset.ph+'】') s.textContent='';});
+  const restore=()=>{blanks.forEach(s=>{if(s.textContent==='【'+s.dataset.ph+'】') s.textContent='';});
     removeEventListener('pointerdown',restore); removeEventListener('keydown',restore);};
   addEventListener('copy',()=>setTimeout(restore,0),{once:true});
   addEventListener('pointerdown',restore); addEventListener('keydown',restore);
-  say(/Mac|iP(hone|ad)/.test(navigator.platform)?'已为你选中，按 ⌘C 复制':'已为你选中，按 Ctrl+C 复制');
+  say(T[L].selected(/Mac|iP(hone|ad)/.test(navigator.platform)?'\u2318C':'Ctrl+C'));
 }
 let tid;
-function say(m){
-  toast.textContent=m; toast.classList.add('on');
-  clearTimeout(tid); tid=setTimeout(()=>toast.classList.remove('on'),2100);
-}
+function say(m){ toast.textContent=m; toast.classList.add('on');
+  clearTimeout(tid); tid=setTimeout(()=>toast.classList.remove('on'),2200); }
 
-function route(){
-  const id=location.hash.slice(1);
-  const p=DATA.prompts.find(x=>x.id===id)||DATA.prompts[0];
-  render(p);
-  if(id) work.scrollIntoView({block:'start',behavior:
-    matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+function setLang(l){
+  if(l===L) return;
+  L=l; localStorage.setItem('tp-lang',l);
+  chrome(); rail(); render(cur);
 }
-addEventListener('hashchange',route);
+document.getElementById('lz').addEventListener('click',()=>setLang('zh'));
+document.getElementById('le').addEventListener('click',()=>setLang('en'));
+
+addEventListener('hashchange',()=>{
+  const p=DATA.prompts.find(x=>x.id===location.hash.slice(1));
+  if(p){ render(p); work.scrollIntoView({block:'start',
+    behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'}); }
+});
+chrome(); rail();
 render(DATA.prompts.find(x=>x.id===location.hash.slice(1))||DATA.prompts[0]);
 </script>

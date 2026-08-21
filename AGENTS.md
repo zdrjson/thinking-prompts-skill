@@ -1,5 +1,51 @@
 # AGENTS.md
 
+This repo is a set of **thinking frameworks**, not a software project. If you are an agent reading this file, use it as follows.
+
+## What to do
+
+When the user describes a situation, work out which framework it lands on, **read that file and run the framework**, rather than handing the template text back to them.
+Only output the raw template when the user explicitly asks for it ("give me the prompt", "I want to paste it into another AI").
+
+| # | Framework | When to use | File |
+|---|---|---|---|
+| 1 | Socratic questioning | You know you're stuck but can't say what on | `prompts/en/01-socratic.md` |
+| 2 | Two-layer explanation | I genuinely don't understand this concept | `prompts/en/02-two-layer.md` |
+| 3 | Reverse-engineering | This is really well made — I want to learn from it | `prompts/en/03-reverse-engineer.md` |
+| 4 | Vertical-and-horizontal analysis | I want to understand an unfamiliar field systematically | `prompts/en/04-vertical-horizontal.md` |
+| 5 | Fact-check | Is this claim / number actually true? | `prompts/en/05-fact-check.md` |
+| 6 | Expert panel | Complex problem, one perspective isn't enough | `prompts/en/06-expert-panel.md` |
+| 7 | First principles | My approach is all patches — I want to start over | `prompts/en/07-first-principles.md` |
+| 8 | Borrowing across domains | I've tried everything my own field offers and I'm still stuck | `prompts/en/08-cross-domain.md` |
+| 9 | Two-way steelman | Both options make sense and I can't choose | `prompts/en/09-steelman.md` |
+| 10 | Run the experiment instead of speculating | More thinking isn't going to make this clearer | `prompts/en/10-min-experiment.md` |
+| 11 | Excavating hidden talent | What am I actually good at? | `prompts/en/11-hidden-talent.md` |
+| 12 | Designing your life | Where should the next five years go? | `prompts/en/12-life-design.md` |
+
+## Routing
+
+Question is fuzzy → run 1 first, then the rest. Question is clear but you lack knowledge → 2–5. You know enough but the approach is stuck → 6–8. You have options but can't choose → 9–10. Same thing over and over, different conclusion each time → almost certainly an 11–12 problem, not 9–10: a decision tool can't fix "I don't know what I want".
+
+## Hard rules while running one
+
+- **One question at a time.** The conversational frameworks (1, 11, 12) go: you ask → user answers → short reaction → next question. Firing six questions at once turns it into a form and gets you nothing real.
+- **Before each follow-up, say in one sentence what the last answer changed in your read.**
+- **Only ask questions that could change the conclusion.** Stop as soon as you have enough; don't pad to a preset count.
+- **Keep fact, inference, and opinion separate.** Where evidence is missing, write "unverified" — don't paper over it with fluent phrasing.
+- **For the multi-perspective framework (6), the value is in the disagreement, not the consensus.** Don't pick three similar roles, and don't invent the views of real people.
+- **When information is missing, ask one key question** — not a checklist.
+- **11 and 12 run half an hour or more.** Open by explaining the process and rough duration; skip the "cost of standing still" projection if the user seems fragile.
+
+## Material
+
+If the user has documents, pages, data, or chat logs, have them paste them in. These frameworks run on context density.
+
+---
+
+<br>
+
+# 中文
+
 这个仓库是一套**思考框架**，不是一个软件项目。读到这个文件的 agent 请按下面的方式使用它。
 
 ## 你要做什么
@@ -41,4 +87,4 @@
 用户手头有文档、页面、数据、聊天记录就让他贴进来。这些框架的质量高度依赖上下文密度。
 
 ---
-框架蒸馏自卡兹克《都Agent时代了，我还是想分享给你这12个我最常用的Prompt。》 https://mp.weixin.qq.com/s/NAdhdFrUq9-BKelqzqpwBQ
+Frameworks distilled from Kazik (卡兹克), "The 12 prompts I still use most, even in the age of agents" — https://mp.weixin.qq.com/s/NAdhdFrUq9-BKelqzqpwBQ
