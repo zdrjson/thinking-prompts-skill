@@ -1,0 +1,297 @@
+<title>十二个思考 Prompt</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F1F3EE; --surface:#FBFCF9; --line:#D3DACE; --grid:#DCE4D8;
+  --ink:#1A221C; --ink2:#4B564D; --ink3:#6F7A71;
+  --accent:#2E6B4C; --accent-soft:rgba(46,107,76,.10);
+  --slot:#B5372B; --slot-bg:rgba(181,55,43,.07); --slot-line:rgba(181,55,43,.35);
+  --shadow:0 1px 2px rgba(26,34,28,.06),0 8px 24px -12px rgba(26,34,28,.18);
+  --serif:"Noto Serif SC",Songti SC,SimSun,Georgia,serif;
+  --sans:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#12160F; --surface:#191E17; --line:#2D352C; --grid:#232B22;
+  --ink:#E5EAE1; --ink2:#A6B0A4; --ink3:#7C877B;
+  --accent:#6FBF92; --accent-soft:rgba(111,191,146,.13);
+  --slot:#F0857A; --slot-bg:rgba(240,133,122,.11); --slot-line:rgba(240,133,122,.42);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --paper:#12160F; --surface:#191E17; --line:#2D352C; --grid:#232B22;
+  --ink:#E5EAE1; --ink2:#A6B0A4; --ink3:#7C877B;
+  --accent:#6FBF92; --accent-soft:rgba(111,191,146,.13);
+  --slot:#F0857A; --slot-bg:rgba(240,133,122,.11); --slot-line:rgba(240,133,122,.42);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* header */
+header{border-bottom:1px solid var(--line);background:var(--paper)}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;padding:44px 0 26px}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(28px,4.2vw,40px);line-height:1.2;
+  margin:0;letter-spacing:.01em;text-wrap:balance}
+h1 .num{color:var(--accent)}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink3);padding-bottom:6px}
+.lede{max-width:62ch;margin:14px 0 0;color:var(--ink2);font-size:15px}
+.lede code{font-family:var(--serif);color:var(--slot);font-size:15px}
+
+/* routing note */
+.route{display:flex;gap:14px;margin:22px 0 30px;padding:16px 18px;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:2px}
+.route .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--accent);
+  text-transform:uppercase;white-space:nowrap;padding-top:3px}
+.route p{margin:0;font-size:14px;color:var(--ink2);line-height:1.85}
+.route b{color:var(--ink);font-weight:500}
+
+/* layout */
+main{display:grid;grid-template-columns:288px 1fr;gap:56px;align-items:start;padding-bottom:80px}
+nav{position:sticky;top:20px}
+.grp{margin-bottom:22px}
+.grp>h2{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink3);margin:0 0 8px;padding-left:2px;font-weight:500}
+.item{display:grid;grid-template-columns:26px 1fr;gap:10px;width:100%;text-align:left;
+  background:none;border:0;padding:7px 10px 7px 2px;border-radius:2px;cursor:pointer;
+  font-family:inherit;color:var(--ink);transition:background .13s}
+.item:hover{background:var(--accent-soft)}
+.item[aria-current="true"]{background:var(--accent-soft)}
+.item[aria-current="true"] .nm{color:var(--accent)}
+.item .no{font-family:var(--mono);font-size:12px;color:var(--ink3);padding-top:3px;
+  font-variant-numeric:tabular-nums}
+.item[aria-current="true"] .no{color:var(--accent)}
+.item .nm{display:block;font-size:15px;font-weight:500;line-height:1.5}
+.item .wh{display:block;font-size:12.5px;color:var(--ink3);line-height:1.55;margin-top:1px}
+.item:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* workbench */
+article{min-width:0}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink3);display:flex;gap:10px;align-items:center}
+.eyebrow .dot{width:3px;height:3px;border-radius:50%;background:var(--ink3)}
+h3{font-family:var(--serif);font-size:clamp(22px,3vw,30px);font-weight:700;margin:10px 0 0;
+  line-height:1.3;text-wrap:balance}
+.when{margin:8px 0 0;color:var(--ink2);font-size:15.5px}
+
+.sheet{position:relative;margin:26px 0 0;background:var(--surface);border:1px solid var(--line);
+  border-radius:2px;box-shadow:var(--shadow)}
+.sheet-hd{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:11px 20px;border-bottom:1px solid var(--line)}
+.sheet-hd .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3)}
+.slotcount{font-family:var(--mono);font-size:11px;color:var(--slot);letter-spacing:.06em}
+.body{padding:20px 24px 24px;font-size:16px;line-height:34px;white-space:pre-wrap;word-break:break-word;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 33px,var(--grid) 33px 34px);
+  background-position:0 20px;background-repeat:repeat}
+.slot{display:inline;color:var(--slot);background:var(--slot-bg);
+  box-shadow:inset 0 -1px 0 var(--slot-line);padding:0 .22em;border-radius:1px;
+  outline:none;line-height:inherit;min-width:2em}
+.slot:focus{background:var(--slot-bg);box-shadow:inset 0 -2px 0 var(--slot)}
+.slot:empty::before{content:attr(data-ph);color:var(--slot);opacity:.62}
+.slot::selection{background:var(--slot);color:var(--surface)}
+
+/* actions */
+.bar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  padding:14px 0 20px;background:linear-gradient(to bottom,transparent,var(--paper) 26%)}
+.btn{font-family:inherit;font-size:14.5px;font-weight:500;padding:10px 20px;border-radius:2px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .13s}
+.btn:hover{border-color:var(--ink3)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{font-size:12.5px;color:var(--ink3);font-family:var(--mono);letter-spacing:.02em}
+
+.note{display:grid;grid-template-columns:auto 1fr;gap:14px;margin:26px 0 0;padding:16px 18px;
+  border:1px solid var(--line);border-radius:2px;background:var(--surface)}
+.note .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);white-space:nowrap;padding-top:3px}
+.note p{margin:0;font-size:14.5px;color:var(--ink2);line-height:1.8}
+
+footer{border-top:1px solid var(--line);padding:26px 0 44px;font-size:13.5px;color:var(--ink3)}
+footer p{margin:0 0 6px;max-width:70ch}
+
+#toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,14px);opacity:0;
+  pointer-events:none;background:var(--ink);color:var(--paper);padding:10px 20px;border-radius:2px;
+  font-size:14px;transition:opacity .18s,transform .18s;z-index:9}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:920px){
+  main{grid-template-columns:1fr;gap:26px}
+  nav{position:static}
+  .grp{margin-bottom:16px}
+  .head{padding:32px 0 20px}
+  .body{padding:16px 16px 20px;background-position:0 16px}
+  .wrap{padding:0 18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header><div class="wrap">
+  <div class="head">
+    <h1><span class="num">12</span> 个思考 Prompt</h1>
+    <span class="tag">问清问题 · 学习 · 解决问题 · 决策 · 认识自己</span>
+  </div>
+  <p class="lede">不用装任何东西，任何 AI 都能用。选一个场景，直接在正文里把 <code>【】</code> 填掉，然后复制走。手头有材料就一起贴上去——这些框架吃上下文，说得越具体，结果差得越远。</p>
+  <div class="route"><span class="k">先分流</span><p id="route"></p></div>
+</div></header>
+
+<div class="wrap"><main>
+  <nav id="nav" aria-label="框架索引"></nav>
+  <article id="work"></article>
+</main></div>
+
+<footer><div class="wrap">
+  <p id="src"></p>
+  <p>网页版把 <code>【】</code> 做成了可直接编辑的填空位，复制出去的是你填完的版本。同一套框架另有 MCP server、AGENTS.md、Cursor rules 和 Claude Skill 四种接入方式，见 <a id="repo" href="#">仓库</a>。</p>
+</div></footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = __PROMPT_DATA__;
+const nav=document.getElementById('nav'), work=document.getElementById('work'),
+      toast=document.getElementById('toast');
+document.getElementById('route').innerHTML=DATA.routing
+  .replace(/「([^」]+)」/g,'<b>「$1」</b>');
+document.getElementById('src').innerHTML='框架蒸馏自 '+DATA.source.author+'《<a href="'+DATA.source.url
+  +'" target="_blank" rel="noopener">'+DATA.source.title+'</a>》，Prompt 原文版权归原作者所有。';
+document.getElementById('repo').href=DATA.repo;
+
+const fills={};                       // id -> [已填内容]
+let cur=DATA.prompts[0];
+
+/* index rail, grouped */
+const groups=[];
+DATA.prompts.forEach(p=>{
+  let g=groups.find(x=>x.n===p.group);
+  if(!g) groups.push(g={n:p.group,name:p.groupName,items:[]});
+  g.items.push(p);
+});
+nav.innerHTML=groups.map(g=>'<section class="grp"><h2>'+g.n+' / '+g.name+'</h2>'
+  +g.items.map(p=>'<button class="item" data-id="'+p.id+'"><span class="no">'
+    +String(p.n).padStart(2,'0')+'</span><span><span class="nm">'+p.name
+    +'</span><span class="wh">'+p.when+'</span></span></button>').join('')
+  +'</section>').join('');
+nav.addEventListener('click',e=>{
+  const b=e.target.closest('.item'); if(!b) return;
+  location.hash=b.dataset.id;
+});
+
+/* split body on 【…】 */
+function parts(body){
+  const out=[]; const re=/【([^】]*)】/g; let last=0,m;
+  while((m=re.exec(body))){
+    if(m.index>last) out.push({t:'txt',v:body.slice(last,m.index)});
+    out.push({t:'slot',v:m[1]}); last=re.lastIndex;
+  }
+  if(last<body.length) out.push({t:'txt',v:body.slice(last)});
+  return out;
+}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function render(p){
+  cur=p;
+  const ps=parts(p.body), n=ps.filter(x=>x.t==='slot').length;
+  const saved=fills[p.id]||[];
+  let si=-1;
+  const html=ps.map(x=>{
+    if(x.t==='txt') return esc(x.v);
+    si++;
+    return '<span class="slot" contenteditable="plaintext-only" data-ph="'+esc(x.v)
+      +'" data-i="'+si+'" role="textbox" aria-label="填空：'+esc(x.v)+'">'+esc(saved[si]||'')+'</span>';
+  }).join('');
+
+  work.innerHTML=
+   '<div class="eyebrow"><span>'+p.group+' / '+p.groupName+'</span><span class="dot"></span>'
+     +'<span>NO.'+String(p.n).padStart(2,'0')+'</span></div>'
+   +'<h3>'+esc(p.name)+'</h3><p class="when">什么时候用：'+esc(p.when)+'</p>'
+   +'<div class="sheet"><div class="sheet-hd"><span class="lbl">Prompt 正文</span>'
+     +(n?'<span class="slotcount">'+n+' 处填空 · 点红字直接改</span>':'<span class="slotcount">整段复制，无需填空</span>')
+     +'</div><div class="body" id="body">'+html+'</div></div>'
+   +'<div class="bar"><button class="btn pri" id="copy">复制 Prompt</button>'
+     +'<a class="btn" id="gpt" target="_blank" rel="noopener">在 ChatGPT 打开</a>'
+     +'<a class="btn" id="cl" target="_blank" rel="noopener">在 Claude 打开</a>'
+     +'<span class="hint" id="hint"></span></div>'
+   +'<div class="note"><span class="k">要点</span><p>'+esc(p.note)+'</p></div>';
+
+  document.querySelectorAll('.slot').forEach(s=>{
+    s.addEventListener('input',()=>{
+      const a=fills[p.id]||(fills[p.id]=[]);
+      a[+s.dataset.i]=s.textContent;
+      links();
+    });
+    s.addEventListener('paste',ev=>{
+      ev.preventDefault();
+      document.execCommand('insertText',false,(ev.clipboardData||window.clipboardData).getData('text'));
+    });
+  });
+  document.getElementById('copy').addEventListener('click',copy);
+  links();
+  [...nav.querySelectorAll('.item')].forEach(b=>
+    b.setAttribute('aria-current', b.dataset.id===p.id ? 'true':'false'));
+}
+
+/* rebuild plain text: empty slot falls back to its 【placeholder】 */
+function text(){
+  let out='';
+  document.getElementById('body').childNodes.forEach(nd=>{
+    if(nd.nodeType===3) out+=nd.nodeValue;
+    else if(nd.classList&&nd.classList.contains('slot'))
+      out+= nd.textContent.trim() ? nd.textContent : '【'+nd.dataset.ph+'】';
+  });
+  return out;
+}
+
+const LIMIT=7800;   // 超过就先复制再开空白对话，避免 URL 被截断
+function links(){
+  const t=text(), enc=encodeURIComponent(t), fits=enc.length<=LIMIT;
+  const gpt=document.getElementById('gpt'), cl=document.getElementById('cl'),
+        hint=document.getElementById('hint');
+  if(fits){
+    gpt.href='https://chatgpt.com/?q='+enc;  gpt.textContent='在 ChatGPT 打开';
+    cl.href='https://claude.ai/new?q='+enc;  cl.textContent='在 Claude 打开';
+    gpt.onclick=cl.onclick=null; hint.textContent='';
+  }else{
+    gpt.href='https://chatgpt.com/';  gpt.textContent='复制并打开 ChatGPT';
+    cl.href='https://claude.ai/new';  cl.textContent='复制并打开 Claude';
+    gpt.onclick=cl.onclick=()=>{copy(true)};
+    hint.textContent='这条太长，走剪贴板';
+  }
+}
+
+async function write(t){
+  try{ await navigator.clipboard.writeText(t); return true; }catch(e){}
+  const ta=document.createElement('textarea');
+  ta.value=t; ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:0;left:-9999px';
+  document.body.appendChild(ta); ta.select();
+  let ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+  ta.remove(); return ok;
+}
+async function copy(quiet){
+  const ok=await write(text());
+  say(ok ? '已复制，贴进任意 AI 就能用' : '复制失败，请手动选中正文复制');
+}
+let tid;
+function say(m){
+  toast.textContent=m; toast.classList.add('on');
+  clearTimeout(tid); tid=setTimeout(()=>toast.classList.remove('on'),2100);
+}
+
+function route(){
+  const id=location.hash.slice(1);
+  const p=DATA.prompts.find(x=>x.id===id)||DATA.prompts[0];
+  render(p);
+  if(id) work.scrollIntoView({block:'start',behavior:
+    matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+addEventListener('hashchange',route);
+render(DATA.prompts.find(x=>x.id===location.hash.slice(1))||DATA.prompts[0]);
+</script>

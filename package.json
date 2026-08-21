@@ -1,0 +1,10 @@
+{
+  "name": "thinking-prompts",
+  "version": "1.0.0",
+  "description": "12 个思考 Prompt：MCP server / AGENTS.md / Cursor rules / Claude Skill / 网页版",
+  "type": "module",
+  "bin": { "thinking-prompts-mcp": "mcp/server.mjs" },
+  "files": ["mcp", "data", "prompts", "AGENTS.md", "SKILL.md", "references"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/zdrjson/thinking-prompts-skill.git" }
+}
