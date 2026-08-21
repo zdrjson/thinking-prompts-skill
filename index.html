@@ -145,7 +145,8 @@ footer p{margin:0 0 6px;max-width:70ch}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-
+</head>
+<body>
 <header><div class="wrap">
   <div class="head">
     <h1><span class="num">12</span> 个思考 Prompt</h1>
@@ -325,5 +326,5 @@ function route(){
 addEventListener('hashchange',route);
 render(DATA.prompts.find(x=>x.id===location.hash.slice(1))||DATA.prompts[0]);
 </script>
-
+</body>
 </html>

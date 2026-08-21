@@ -15,10 +15,15 @@ def w(p, s):
 tpl = (ROOT/'src/index.template.html').read_text(encoding='utf-8')
 page = tpl.replace('__PROMPT_DATA__', json.dumps(D, ensure_ascii=False))
 w('dist/artifact.html', page)          # Artifact 由宿主套 head，直接给内容
-w('index.html', '<!doctype html>\n<html lang="zh-CN">\n<head>\n<meta charset="utf-8">\n'
+
+# 独立页需要完整文档结构：模板前半（title/link/style）进 <head>，从 <header> 起进 <body>
+cut = page.index('<header')
+w('index.html',
+  '<!doctype html>\n<html lang="zh-CN">\n<head>\n<meta charset="utf-8">\n'
   '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
   f'<meta name="description" content="12 个可直接复制的思考 Prompt，任何 AI 都能用。{ATTR}">\n'
-  + page.replace('<title>', '<title>', 1) + '\n</html>\n')
+  + page[:cut].rstrip() + '\n</head>\n<body>\n'
+  + page[cut:].rstrip() + '\n</body>\n</html>\n')
 
 # ---------- 2. prompts/：12 个独立 md ----------
 for p in P:
@@ -198,11 +203,10 @@ python3 build.py
 ---
 
 <div align="center">
-<sub>
 
-框架蒸馏自{SRC['author']}《[{SRC['title']}]({SRC['url']})》<br>
-Prompt 原文版权归原作者所有，本仓库仅作整理、跨平台封装与可复制排版
+<sub>框架蒸馏自{SRC['author']}《[{SRC['title']}]({SRC['url']})》</sub>
 
-</sub>
+<sub>Prompt 原文版权归原作者所有，本仓库仅作整理、跨平台封装与可复制排版</sub>
+
 </div>
 """)

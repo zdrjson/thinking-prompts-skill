@@ -410,10 +410,9 @@ python3 build.py
 ---
 
 <div align="center">
-<sub>
 
-框架蒸馏自卡兹克《[都Agent时代了，我还是想分享给你这12个我最常用的Prompt。](https://mp.weixin.qq.com/s/NAdhdFrUq9-BKelqzqpwBQ)》<br>
-Prompt 原文版权归原作者所有，本仓库仅作整理、跨平台封装与可复制排版
+<sub>框架蒸馏自卡兹克《[都Agent时代了，我还是想分享给你这12个我最常用的Prompt。](https://mp.weixin.qq.com/s/NAdhdFrUq9-BKelqzqpwBQ)》</sub>
 
-</sub>
+<sub>Prompt 原文版权归原作者所有，本仓库仅作整理、跨平台封装与可复制排版</sub>
+
 </div>
