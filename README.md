@@ -26,16 +26,82 @@
 
 ---
 
-## 五种接法，同一份源
+## 接进你的 AI
 
-| | 给谁 | 怎么接 |
+斜杠短名两边一致：Claude Code 打 `/think:框架`，Claude 网页 / App 打 `/think-框架`。
+
+| 平台 | 打什么 | 怎么装 |
 | :--- | :--- | :--- |
-| **网页版** | 任何人，零安装 | [打开](https://zdrjson.github.io/thinking-prompts-skill/) |
-| **MCP server** | 任何 MCP 客户端 | [见下方](#接-mcp) |
-| **AGENTS.md** | 读 AGENTS.md 的 agent | 把 [`AGENTS.md`](AGENTS.md) 放进项目根目录 |
-| **Cursor rules** | Cursor | 复制 [`.cursor/rules/`](.cursor/rules/) |
-| **Claude Skill** | Claude Code · Claude Desktop | `git clone` 进 `~/.claude/skills/` |
-| **裸 Markdown** | 自己拼工作流 | [`prompts/`](prompts/) · [`data/prompts.json`](data/prompts.json) |
+| **Claude Code** | `/think:field` | 复制命令目录 [↓](#cc) |
+| **Claude 网页 · 桌面 · App** | `/think-field` | 上传 12 个 Skill [↓](#chat) |
+| **Codex · Cursor · 其他 agent** | 自然语言 | `AGENTS.md` · `.cursor/rules/` [↓](#other) |
+| **任意 MCP 客户端** | 斜杠菜单 | MCP server [↓](#接-mcp) |
+| **任何人，零安装** | — | [网页版](https://zdrjson.github.io/thinking-prompts-skill/) |
+
+<br>
+<a id="cc"></a>
+
+### 1 · Claude Code — 斜杠 `/think:*`
+
+12 个框架各是一条个人斜杠命令。装一次，所有项目都能用。
+
+```bash
+git clone https://github.com/zdrjson/thinking-prompts-skill
+cp -r thinking-prompts-skill/claude-code/commands/think ~/.claude/commands/
+```
+
+只想在某个项目里用，就把 `think` 目录拷进 `<项目>/.claude/commands/` 里。
+
+然后在 Claude Code 打 `/think:`，菜单里 12 个任选，后面直接写你的问题：
+
+```
+/think:steelman 我要不要接这个 offer——钱多，但要搬去外地
+```
+
+![Claude Code 的 /think: 斜杠菜单](assets/slash-claude-code.png)
+
+<a id="chat"></a>
+
+### 2 · Claude 网页 / 桌面 / 手机 App — 斜杠 `/think-*`（Skills）
+
+网页版把每个框架做成一个可上传的 Skill。
+
+1. 打开 [claude.ai/customize/skills](https://claude.ai/customize/skills)（或头像 → **Settings** → **Capabilities / Skills**）。
+2. 点 **Add → Upload skill**，把 [`claude-skills/`](claude-skills/) 里的 12 个 `think-*.md` 一个个传上去；每个点 **Save** 会自动跑一遍安全扫描。
+3. 聊天框打 `/think`，12 个框架都在里面。同一账号的桌面和手机 App 会自动同步（App 可能要重开一下）。
+
+![Claude 网页版的 /think 斜杠菜单](assets/slash-claude-chat.png)
+
+> 网页 / App 一次只能传一个文件，12 个要传 12 次——这是 Anthropic 那边的限制。
+
+<a id="other"></a>
+
+### 3 · Codex / Cursor / 其他 agent
+
+- **Codex CLI、Cline、Aider 等读 `AGENTS.md` 的**：把 [`AGENTS.md`](AGENTS.md) 放进项目根目录，或把它的内容粘进该工具的 system / instructions 设置。agent 会自己判断该套哪个框架，而不是把模板原样丢回给你。
+- **Cursor**：复制 [`.cursor/rules/`](.cursor/rules/) 进项目。
+- **任意 MCP 客户端**（Claude Desktop、Cursor、Cline…）：见下面的 [MCP](#接-mcp)。
+- **只想复制粘贴**：开 [网页版](https://zdrjson.github.io/thinking-prompts-skill/) 填好空直接抄，或从 [`prompts/`](prompts/) 拿单条 Markdown。
+
+<details>
+<summary>12 个框架的斜杠名对照</summary>
+
+| 框架 | Claude Code | Claude 网页 / App |
+| :--- | :--- | :--- |
+| 苏格拉底式提问 | `/think:socratic` | `think-socratic` |
+| 双层解释法 | `/think:explain` | `think-explain` |
+| 反向拆解 | `/think:reverse` | `think-reverse` |
+| 横纵分析法 | `/think:field` | `think-field` |
+| 事实核查 | `/think:factcheck` | `think-factcheck` |
+| 专家会诊 | `/think:panel` | `think-panel` |
+| 第一性原理 | `/think:first` | `think-first` |
+| 跨领域借解 | `/think:crossdomain` | `think-crossdomain` |
+| 双向钢人论证 | `/think:steelman` | `think-steelman` |
+| 用最小实验替代空想 | `/think:experiment` | `think-experiment` |
+| 挖掘隐藏天赋 | `/think:talent` | `think-talent` |
+| 人生设计术 | `/think:lifedesign` | `think-lifedesign` |
+
+</details>
 
 <br>
 
@@ -562,7 +628,7 @@
 python3 build.py
 ```
 
-重新吐出 `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · 两份 README，MCP server 直接读 JSON。
+重新吐出 `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · `claude-code/commands/` · `claude-skills/` · 两份 README，MCP server 直接读 JSON。
 别手改生成物，下次 build 会覆盖。
 
 <br>

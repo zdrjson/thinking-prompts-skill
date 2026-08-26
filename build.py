@@ -8,6 +8,12 @@ D = json.load(open(ROOT / 'data/prompts.json', encoding='utf-8'))
 P, SRC = D['prompts'], D['source']
 PAGES = "https://zdrjson.github.io/thinking-prompts-skill/"
 
+# 斜杠短名：Claude Code 命令 `/think:<slug>` 与 Claude 网页 Skill `think-<slug>` 共用
+SLUG = {'socratic': 'socratic', 'two-layer': 'explain', 'reverse-engineer': 'reverse',
+        'vertical-horizontal': 'field', 'fact-check': 'factcheck', 'expert-panel': 'panel',
+        'first-principles': 'first', 'cross-domain': 'crossdomain', 'steelman': 'steelman',
+        'min-experiment': 'experiment', 'hidden-talent': 'talent', 'life-design': 'lifedesign'}
+
 ATTR = {'zh': f"框架蒸馏自{SRC['author']}《{SRC['title']}》 {SRC['url']}",
         'en': f"Frameworks distilled from {SRC['author_en']}, \"{SRC['title_en']}\" — {SRC['url']}"}
 F = lambda p, k, lang: p[k + '_en'] if lang == 'en' else p[k]
@@ -155,7 +161,7 @@ COPY = {
    anchor='十二个框架', idx='十二个框架', h_when='什么时候用', route='先分流',
    fill='用的时候把 `【】` 里的内容换成你自己的信息。手头有原始材料就一起贴上去 —— 这些框架吃上下文，说得越具体，结果差得越远。',
    edit='改 Prompt', editlede='[`data/prompts.json`](data/prompts.json) 是唯一的源，其余全部由它生成：',
-   editnote='重新吐出 `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · 两份 README，MCP server 直接读 JSON。\n别手改生成物，下次 build 会覆盖。',
+   editnote='重新吐出 `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · `claude-code/commands/` · `claude-skills/` · 两份 README，MCP server 直接读 JSON。\n别手改生成物，下次 build 会覆盖。',
    note='要点', foot2=f"Prompt 原文版权归原作者{SRC['author']}所有，本仓库仅作整理、跨平台封装与可复制排版"),
  'en': dict(file='README.en.md', other='README.md', otherlbl='中文',
    sub='**ASK　·　LEARN　·　SOLVE　·　DECIDE　·　KNOW YOURSELF**',
@@ -174,7 +180,7 @@ COPY = {
    anchor='the-twelve-frameworks', idx='The twelve frameworks', h_when='When to use', route='START HERE',
    fill='Replace whatever sits inside `【】` with your own details. Paste in any raw material you have — these frameworks run on context, and the more specific you are the further the results diverge.',
    edit='Editing the prompts', editlede='[`data/prompts.json`](data/prompts.json) is the only source; everything else is generated from it:',
-   editnote='That regenerates `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` and both READMEs. The MCP server reads the JSON directly.\nDon\'t hand-edit generated files — the next build overwrites them.',
+   editnote='That regenerates `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · `claude-code/commands/` · `claude-skills/` and both READMEs. The MCP server reads the JSON directly.\nDon\'t hand-edit generated files — the next build overwrites them.',
    note='Note', foot2=f"The prompt text remains the copyright of {SRC['author_en']}; this repo only organises, packages, and formats it")}
 
 BADGE = ("[![Web](https://img.shields.io/badge/web-open-2E6B4C?style=flat-square)](%s)"
@@ -194,6 +200,94 @@ for lang, c in COPY.items():
                     f"```text\n{md_wrap(F(p,'body',lang), lang)}\n```\n\n"
                     f"**{c['note']}** — {F(p,'note',lang)}\n\n<sub>[↑](#{c['anchor']})</sub>\n")
     rw = lambda r, how=None: f"| **{r[0]}** | {r[1]} | {how or r[2]} |"
+
+    # ---- 接法总览 + 分平台安装 ----
+    zh = lang == 'zh'
+    L = lambda z, e: z if zh else e
+    AMCP = c['mcp'].lower().replace(' ', '-')
+    ovh = L(('平台', '打什么', '怎么装'), ('Platform', 'You type', 'Install'))
+    ov = "\n".join([
+        "| **Claude Code** | `/think:field` | " + L("复制命令目录", "copy the commands folder") + " [↓](#cc) |",
+        "| **Claude " + L("网页 · 桌面 · App", "web · desktop · app") + "** | `/think-field` | " + L("上传 12 个 Skill", "upload the 12 skills") + " [↓](#chat) |",
+        "| **Codex · Cursor" + L(" · 其他 agent", " · any agent") + "** | " + L("自然语言", "natural language") + " | `AGENTS.md` · `.cursor/rules/` [↓](#other) |",
+        "| **" + L("任意 MCP 客户端", "Any MCP client") + "** | " + L("斜杠菜单", "slash menu") + f" | MCP server [↓](#{AMCP}) |",
+        "| **" + L("任何人，零安装", "Anyone, zero install") + "** | — | [" + L("网页版", "Web") + f"]({PAGES}) |",
+    ])
+    maprows = "\n".join(f"| {F(p,'name',lang)} | `/think:{SLUG[p['id']]}` | `think-{SLUG[p['id']]}` |" for p in P)
+
+    blk = []
+    blk.append(L(f"## 接进你的 AI\n\n斜杠短名两边一致：Claude Code 打 `/think:框架`，Claude 网页 / App 打 `/think-框架`。",
+                 f"## Wire it into your AI\n\nThe slash names match across both: `/think:name` in Claude Code, `/think-name` in Claude web / app.")
+               + f"\n\n| {ovh[0]} | {ovh[1]} | {ovh[2]} |\n| :--- | :--- | :--- |\n{ov}\n\n<br>")
+
+    # 1. Claude Code
+    blk.append('<a id="cc"></a>\n\n' + L(
+        "### 1 · Claude Code — 斜杠 `/think:*`\n\n"
+        "12 个框架各是一条个人斜杠命令。装一次，所有项目都能用。\n\n"
+        "```bash\n"
+        "git clone https://github.com/zdrjson/thinking-prompts-skill\n"
+        "cp -r thinking-prompts-skill/claude-code/commands/think ~/.claude/commands/\n"
+        "```\n\n"
+        "只想在某个项目里用，就把 `think` 目录拷进 `<项目>/.claude/commands/` 里。\n\n"
+        "然后在 Claude Code 打 `/think:`，菜单里 12 个任选，后面直接写你的问题：\n\n"
+        "```\n/think:steelman 我要不要接这个 offer——钱多，但要搬去外地\n```\n\n"
+        "![Claude Code 的 /think: 斜杠菜单](assets/slash-claude-code.png)",
+        "### 1 · Claude Code — slash `/think:*`\n\n"
+        "Each of the 12 frameworks is one personal slash command. Install once, works in every project.\n\n"
+        "```bash\n"
+        "git clone https://github.com/zdrjson/thinking-prompts-skill\n"
+        "cp -r thinking-prompts-skill/claude-code/commands/think ~/.claude/commands/\n"
+        "```\n\n"
+        "For one project only, copy the `think` folder into `<project>/.claude/commands/` instead.\n\n"
+        "Then type `/think:` in Claude Code, pick one of the 12, and write your question after it:\n\n"
+        "```\n/think:steelman Should I take this offer — more money, but I'd have to relocate\n```\n\n"
+        "![The /think: slash menu in Claude Code](assets/slash-claude-code.png)"))
+
+    # 2. Claude web / app
+    blk.append('\n<a id="chat"></a>\n\n' + L(
+        "### 2 · Claude 网页 / 桌面 / 手机 App — 斜杠 `/think-*`（Skills）\n\n"
+        "网页版把每个框架做成一个可上传的 Skill。\n\n"
+        "1. 打开 [claude.ai/customize/skills](https://claude.ai/customize/skills)（或头像 → **Settings** → **Capabilities / Skills**）。\n"
+        "2. 点 **Add → Upload skill**，把 [`claude-skills/`](claude-skills/) 里的 12 个 `think-*.md` 一个个传上去；每个点 **Save** 会自动跑一遍安全扫描。\n"
+        "3. 聊天框打 `/think`，12 个框架都在里面。同一账号的桌面和手机 App 会自动同步（App 可能要重开一下）。\n\n"
+        "![Claude 网页版的 /think 斜杠菜单](assets/slash-claude-chat.png)\n\n"
+        "> 网页 / App 一次只能传一个文件，12 个要传 12 次——这是 Anthropic 那边的限制。",
+        "### 2 · Claude web / desktop / mobile app — slash `/think-*` (Skills)\n\n"
+        "On the web side each framework is an uploadable Skill.\n\n"
+        "1. Open [claude.ai/customize/skills](https://claude.ai/customize/skills) (or avatar → **Settings** → **Capabilities / Skills**).\n"
+        "2. Click **Add → Upload skill** and upload the 12 `think-*.md` files in [`claude-skills/`](claude-skills/), one at a time; each **Save** runs a security scan.\n"
+        "3. Type `/think` in the composer — all 12 are there. Desktop and mobile apps on the same account sync automatically (you may need to reopen the app).\n\n"
+        "![The /think slash menu on claude.ai](assets/slash-claude-chat.png)\n\n"
+        "> The web / app uploader takes one file at a time, so 12 frameworks means 12 uploads — that's an Anthropic-side limit."))
+
+    # 3. other agents
+    blk.append('\n<a id="other"></a>\n\n' + L(
+        "### 3 · Codex / Cursor / 其他 agent\n\n"
+        "- **Codex CLI、Cline、Aider 等读 `AGENTS.md` 的**：把 [`AGENTS.md`](AGENTS.md) 放进项目根目录，或把它的内容粘进该工具的 system / instructions 设置。agent 会自己判断该套哪个框架，而不是把模板原样丢回给你。\n"
+        "- **Cursor**：复制 [`.cursor/rules/`](.cursor/rules/) 进项目。\n"
+        "- **任意 MCP 客户端**（Claude Desktop、Cursor、Cline…）：见下面的 [MCP](#" + AMCP + ")。\n"
+        "- **只想复制粘贴**：开 [网页版](" + PAGES + ") 填好空直接抄，或从 [`prompts/`](prompts/) 拿单条 Markdown。",
+        "### 3 · Codex / Cursor / any other agent\n\n"
+        "- **Codex CLI, Cline, Aider — anything that reads `AGENTS.md`**: drop [`AGENTS.md`](AGENTS.md) in your project root, or paste its contents into the tool's system / instructions setting. The agent works out which framework fits and runs it, instead of handing the template back to you.\n"
+        "- **Cursor**: copy [`.cursor/rules/`](.cursor/rules/) into the project.\n"
+        "- **Any MCP client** (Claude Desktop, Cursor, Cline…): see [MCP](#" + AMCP + ") below.\n"
+        "- **Just want copy-paste**: open the [web version](" + PAGES + ") and copy the filled-in prompt, or grab a single Markdown file from [`prompts/en/`](prompts/en/)."))
+
+    blk.append("\n" + L(
+        "<details>\n<summary>12 个框架的斜杠名对照</summary>\n\n"
+        "| 框架 | Claude Code | Claude 网页 / App |\n| :--- | :--- | :--- |\n" + maprows + "\n\n</details>",
+        "<details>\n<summary>Slash names for all 12 frameworks</summary>\n\n"
+        "| Framework | Claude Code | Claude web / app |\n| :--- | :--- | :--- |\n" + maprows + "\n\n</details>"))
+
+    # MCP subsection (kept)
+    blk.append("\n<br>\n\n### " + c['mcp'] + "\n\n" + c['mcplede'] + "\n\n"
+               '```json\n{\n  "mcpServers": {\n    "thinking-prompts": {\n'
+               '      "command": "node",\n'
+               '      "args": ["/absolute/path/to/thinking-prompts-skill/mcp/server.mjs"]\n'
+               "    }\n  }\n}\n```\n\n"
+               f"- {c['mcpa']}\n- {c['mcpb']}\n- {c['mcpc']}")
+    install_block = "\n".join(blk)
+
     w(c['file'], f"""<div align="center">
 
 # {D['title_en'] if lang=='en' else '12 个思考 Prompt'}
@@ -222,37 +316,7 @@ for lang, c in COPY.items():
 
 ---
 
-## {c['ways']}
-
-| | {c['w1']} | {c['w2']} |
-| :--- | :--- | :--- |
-{rw(c['r_web'], f"[{c['r_web'][2][1:-1]}]({PAGES})")}
-{rw(c['r_mcp'])}
-{rw(c['r_ag'])}
-{rw(c['r_cur'])}
-{rw(c['r_sk'])}
-{rw(c['r_md'])}
-
-<br>
-
-### {c['mcp']}
-
-{c['mcplede']}
-
-```json
-{{
-  "mcpServers": {{
-    "thinking-prompts": {{
-      "command": "node",
-      "args": ["/absolute/path/to/thinking-prompts-skill/mcp/server.mjs"]
-    }}
-  }}
-}}
-```
-
-- {c['mcpa']}
-- {c['mcpb']}
-- {c['mcpc']}
+{install_block}
 
 <br>
 
@@ -341,3 +405,31 @@ description: "12 个高杠杆思考框架（中英双语）：问清问题（苏
 
 文档、页面、数据、聊天记录——都让他贴进来。这些框架的质量高度依赖上下文密度，材料越多越准，不用怕上下文长。
 """)
+
+# ---------- 7. Claude Code 斜杠命令 /think:<slug>（自包含，不依赖别的文件） ----------
+RULES_ZH = ("**你自己按框架跑，把模板里的 `【】` 用我的实际情况填好再执行，不要把模板原样丢回给我**"
+            "（除非我明说“把 prompt 给我 / 我要复制到别的 AI”）。对话式框架（苏格拉底 / 挖天赋 / 人生设计）"
+            "**一次只问一个问题**，每次追问前先用一句话说明上一条回答更新了什么判断；只问可能改变结论的问题；"
+            "事实、推断、观点分开写。我手头有材料就一起用上。")
+for p in P:
+    slug = SLUG[p['id']]
+    w(f"claude-code/commands/think/{slug}.md",
+      f"---\ndescription: {p['name']} — {p['when']}\n"
+      f"argument-hint: [直接写你的问题 / 情况，材料越多越准]\n---\n\n"
+      f"用「{p['name']}」思考框架处理下面的内容。{RULES_ZH}\n\n"
+      f"框架模板：\n\n```text\n{p['body']}\n```\n\n"
+      f"我的问题 / 情况：\n$ARGUMENTS\n")
+
+# ---------- 8. Claude 网页 / App 可上传 Skill：think-<slug>.md ----------
+SKILL_RULE_ZH = ("**怎么用（给助手的指令）：** 你自己按这个框架带我跑，把下面模板里的 `【】` 用我的实际情况填好再执行。"
+                 "对话式的框架要**一次只问一个问题**，每次追问前先用一句话说明上条回答更新了什么判断；"
+                 "只问可能改变结论的问题；事实/推断/观点分开写。除非我明说“把 prompt 原文给我 / 我要复制到别处”，"
+                 "否则不要只把模板丢回来。我有材料就一起用上。")
+for p in P:
+    slug = SLUG[p['id']]
+    desc = f"{p['name']} — {p['when']}。{p['name_en']}. 用户卡在这一类问题时使用。"
+    w(f"claude-skills/think-{slug}.md",
+      f"---\nname: think-{slug}\ndescription: \"{desc}\"\n---\n\n"
+      f"# {p['name']}\n\n{SKILL_RULE_ZH}\n\n---\n\n"
+      f"# {p['name']}\n\n**什么时候用:** {p['when']}\n\n"
+      f"```text\n{p['body']}\n```\n\n**要点:** {p['note']}\n\n---\n{ATTR['zh']}\n")

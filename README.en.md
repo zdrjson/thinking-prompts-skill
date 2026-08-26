@@ -26,16 +26,82 @@ Not tied to any one AI. Open the web version, or wire it into your own agent.
 
 ---
 
-## Five ways in, one source
+## Wire it into your AI
 
-| | For | How |
+The slash names match across both: `/think:name` in Claude Code, `/think-name` in Claude web / app.
+
+| Platform | You type | Install |
 | :--- | :--- | :--- |
-| **Web version** | Anyone, nothing to install | [Open](https://zdrjson.github.io/thinking-prompts-skill/) |
-| **MCP server** | Any MCP client | [Below](#connecting-mcp) |
-| **AGENTS.md** | Agents that read AGENTS.md | Drop [`AGENTS.md`](AGENTS.md) in your project root |
-| **Cursor rules** | Cursor | Copy [`.cursor/rules/`](.cursor/rules/) |
-| **Claude Skill** | Claude Code · Claude Desktop | `git clone` into `~/.claude/skills/` |
-| **Plain Markdown** | Roll your own workflow | [`prompts/en/`](prompts/en/) · [`data/prompts.json`](data/prompts.json) |
+| **Claude Code** | `/think:field` | copy the commands folder [↓](#cc) |
+| **Claude web · desktop · app** | `/think-field` | upload the 12 skills [↓](#chat) |
+| **Codex · Cursor · any agent** | natural language | `AGENTS.md` · `.cursor/rules/` [↓](#other) |
+| **Any MCP client** | slash menu | MCP server [↓](#connecting-mcp) |
+| **Anyone, zero install** | — | [Web](https://zdrjson.github.io/thinking-prompts-skill/) |
+
+<br>
+<a id="cc"></a>
+
+### 1 · Claude Code — slash `/think:*`
+
+Each of the 12 frameworks is one personal slash command. Install once, works in every project.
+
+```bash
+git clone https://github.com/zdrjson/thinking-prompts-skill
+cp -r thinking-prompts-skill/claude-code/commands/think ~/.claude/commands/
+```
+
+For one project only, copy the `think` folder into `<project>/.claude/commands/` instead.
+
+Then type `/think:` in Claude Code, pick one of the 12, and write your question after it:
+
+```
+/think:steelman Should I take this offer — more money, but I'd have to relocate
+```
+
+![The /think: slash menu in Claude Code](assets/slash-claude-code.png)
+
+<a id="chat"></a>
+
+### 2 · Claude web / desktop / mobile app — slash `/think-*` (Skills)
+
+On the web side each framework is an uploadable Skill.
+
+1. Open [claude.ai/customize/skills](https://claude.ai/customize/skills) (or avatar → **Settings** → **Capabilities / Skills**).
+2. Click **Add → Upload skill** and upload the 12 `think-*.md` files in [`claude-skills/`](claude-skills/), one at a time; each **Save** runs a security scan.
+3. Type `/think` in the composer — all 12 are there. Desktop and mobile apps on the same account sync automatically (you may need to reopen the app).
+
+![The /think slash menu on claude.ai](assets/slash-claude-chat.png)
+
+> The web / app uploader takes one file at a time, so 12 frameworks means 12 uploads — that's an Anthropic-side limit.
+
+<a id="other"></a>
+
+### 3 · Codex / Cursor / any other agent
+
+- **Codex CLI, Cline, Aider — anything that reads `AGENTS.md`**: drop [`AGENTS.md`](AGENTS.md) in your project root, or paste its contents into the tool's system / instructions setting. The agent works out which framework fits and runs it, instead of handing the template back to you.
+- **Cursor**: copy [`.cursor/rules/`](.cursor/rules/) into the project.
+- **Any MCP client** (Claude Desktop, Cursor, Cline…): see [MCP](#connecting-mcp) below.
+- **Just want copy-paste**: open the [web version](https://zdrjson.github.io/thinking-prompts-skill/) and copy the filled-in prompt, or grab a single Markdown file from [`prompts/en/`](prompts/en/).
+
+<details>
+<summary>Slash names for all 12 frameworks</summary>
+
+| Framework | Claude Code | Claude web / app |
+| :--- | :--- | :--- |
+| Socratic questioning | `/think:socratic` | `think-socratic` |
+| Two-layer explanation | `/think:explain` | `think-explain` |
+| Reverse-engineering | `/think:reverse` | `think-reverse` |
+| Vertical-and-horizontal analysis | `/think:field` | `think-field` |
+| Fact-check | `/think:factcheck` | `think-factcheck` |
+| Expert panel | `/think:panel` | `think-panel` |
+| First principles | `/think:first` | `think-first` |
+| Borrowing across domains | `/think:crossdomain` | `think-crossdomain` |
+| Two-way steelman | `/think:steelman` | `think-steelman` |
+| Run the experiment instead of speculating | `/think:experiment` | `think-experiment` |
+| Excavating hidden talent | `/think:talent` | `think-talent` |
+| Designing your life | `/think:lifedesign` | `think-lifedesign` |
+
+</details>
 
 <br>
 
@@ -665,7 +731,7 @@ the first question.
 python3 build.py
 ```
 
-That regenerates `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` and both READMEs. The MCP server reads the JSON directly.
+That regenerates `index.html` · `prompts/` · `prompts/en/` · `AGENTS.md` · `.cursor/rules/` · `claude-code/commands/` · `claude-skills/` and both READMEs. The MCP server reads the JSON directly.
 Don't hand-edit generated files — the next build overwrites them.
 
 <br>
